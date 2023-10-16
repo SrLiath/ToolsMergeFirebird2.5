@@ -20,8 +20,6 @@ This repository contains a set of useful tools for comparing, merging, and manip
 
 To use these tools, you will need to have Python installed on your system. You can run each script with Python, and they may require specific database connections or configurations, depending on your use case.
 
-Please refer to the individual script's documentation and comments for more detailed instructions on how to use them effectively.
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
