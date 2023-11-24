@@ -1,7 +1,7 @@
 import fdb
 
 # Substitua pelos seus próprios detalhes de conexão
-database = 'filho.gdb'
+database = 'pai.gdb'
 user = 'SYSDBA'
 password = 'masterkey'
 
