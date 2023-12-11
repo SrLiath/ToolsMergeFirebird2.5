@@ -2,7 +2,7 @@ import fdb
 
 # Conexão com o banco de dados
 con = fdb.connect(
-    dsn='pai.gdb',
+    dsn='filho.gdb',
     user='SYSDBA',
     password='masterkey',
     charset='NONE'
