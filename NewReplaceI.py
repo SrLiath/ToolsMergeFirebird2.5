@@ -8,10 +8,10 @@ def alterar(nome_arquivo, coluna_desejada, novo_numero, arquivo_novo):
     with open(nome_arquivo, 'r') as arquivo:
         for linha in arquivo:
             # Encontrar as colunas e valores
-            match = re.search(r"INSERT INTO ([\w\s]+)\(([^)]+)\) VALUES \(([^)]+)\);", linha)
+            match = re.search(r"INSERT INTO\s+([\w\s]+)\(([^)]+)\)\s+VALUES\s+\(([^)]+)\);", linha)
             if match:
-                tabela_original = match.group(1)
-                colunas = match.group(2).split(', ')
+                tabela_original = match.group(1).strip()  # Remover espaços extras
+                colunas = [coluna.strip() for coluna in match.group(2).split(',')]  # Remover espaços extras
                 valores_brutos = match.group(3).split(',')
 
                 # Processar os valores para lidar com vírgulas dentro de aspas ou apóstrofos
@@ -66,4 +66,5 @@ def alterar(nome_arquivo, coluna_desejada, novo_numero, arquivo_novo):
             novo_arquivo.write(f"{valor_antigo} = {valor_novo}\n")
 
 # Exemplo de uso
-alterar('teste.txt', 'ID', 999, 'ID.txt')
+alterar('output_sql/Vault/CODLGD.sql', 'CODLGD', 7495, 'CODLGD.txt')
+alterar('output_sql/Vault/CODBAI.sql', 'CODBAI', 1336, 'CODBAI.txt')

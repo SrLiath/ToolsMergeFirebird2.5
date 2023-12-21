@@ -1,32 +1,56 @@
 import re
 import os
 
-def aplicar_substituicoes(arquivo_sql, pasta_substituicoes):
-    # Criar um dicionário para armazenar as substituições
-    substituicoes = {}
+def alterar(sql_statement):
+    try:
+        i = 0
+        match = re.search(r"INSERT\s+INTO\s+(\w+)\s*\((.*?)\)\s*VALUES\s*\((.*?)\);", sql_statement)
 
-    # Ler os arquivos de substituição
-    for arquivo_substituicao in os.listdir(pasta_substituicoes):
-        caminho_arquivo = os.path.join(pasta_substituicoes, arquivo_substituicao)
-        if os.path.isfile(caminho_arquivo):
-            with open(caminho_arquivo, 'r') as arquivo_sub:
-                for linha in arquivo_sub:
-                    antigo_valor, novo_valor = map(str.strip, linha.split('='))
-                    substituicoes[antigo_valor] = novo_valor
+        if match:
+            table_name = match.group(1)
+            columns = match.group(2)
+            values = match.group(3)
 
-    # Aplicar as substituições ao arquivo SQL
-    with open(arquivo_sql, 'r') as arquivo:
-        linhas_modificadas = []
-        for linha in arquivo:
-            for antigo_valor, novo_valor in substituicoes.items():
-                # Substituir o valor antigo pelo novo na linha
-                linha = linha.replace(antigo_valor, novo_valor)
+            columns_array = [col.strip() for col in columns.split(',')]
+            values_array = [val.strip() for val in values.split(',')]
+        else:
+            return  # Exit the function if no match is found
 
-            linhas_modificadas.append(linha)
+        for column in columns_array:
+            file_path = os.path.join('ids', f'{column}.txt')
 
-    # Sobrescrever o arquivo SQL com as linhas modificadas
-    with open(arquivo_sql, 'w') as arquivo:
-        arquivo.writelines(linhas_modificadas)
+            if os.path.exists(file_path):
+                with open(file_path, 'r') as file:
+                    for line in file:
+                        partes = line.split(' = ')
+                        if len(partes) == 2:
+                            valor1, valor2 = partes
+                            if valor1 == values_array[i]:
+                                values_array[i] = valor2.strip()
+                        else:
+                            continue
 
-# Exemplo de uso
-aplicar_substituicoes('teste.txt', 'testeids')
+            else:
+                continue
+
+            i += 1
+
+        # Create a new INSERT statement
+        new_insert = f"INSERT INTO {table_name} ({', '.join(columns_array)}) VALUES ({', '.join(values_array)});"
+        with open('insertsNew.sql', 'a') as arquivo:
+            arquivo.write(new_insert + '\n')
+
+    except Exception as e:
+        print(f"Erro: {e}")
+
+file_path = 'teste.sql'
+with open(file_path, 'r') as file:
+    lines = file.readlines()
+
+total_lines = len(lines)
+
+for i, line in enumerate(lines, 1):
+    remaining_lines = total_lines - i
+    print(f"Linhas restantes: {remaining_lines}")
+    alterar(line.strip())
+    
